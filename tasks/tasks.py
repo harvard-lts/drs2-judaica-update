@@ -5,8 +5,8 @@ from celery.signals import worker_shutdown
 from pathlib import Path
 import os
 import logging
-import etd
-from etd.worker import Worker
+import drs2
+from drs2.worker import Worker
 import json
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
@@ -20,7 +20,7 @@ from opentelemetry.trace.propagation.tracecontext \
 
 app = Celery()
 app.config_from_object('celeryconfig')
-etd.configure_logger()
+drs2.configure_logger()
 logger = logging.getLogger('etd_base_template')
 
 FEATURE_FLAGS = "feature_flags"
@@ -83,19 +83,21 @@ def worker_shutdown(**_):  # pragma: no cover
 app.steps["worker"].add(LivenessProbe)
 
 
-@app.task(serializer='json', name='etd-base-template.tasks.send_to_base')
-def send_to_base(json_message):
-    with tracer.start_as_current_span("send_to_base_task") as current_span:
+@app.task(serializer='json', name='drs2-judaica-update.tasks.update_file_id')
+def update_file_id(json_message):
+    with tracer.start_as_current_span("Initialize Judaica") as current_span:
         logger.info("message")
         logger.info(json_message)
         current_span.add_event(json.dumps(json_message))
-        new_message = json_message   # {"hello": "from etd-dash-service"}
+        new_message = json_message   # {"hello": "from drs2-judaica-update"}
 
         # preserve trace id across components
         carrier = {}
         TraceContextTextMapPropagator().inject(carrier)
         traceparent = carrier["traceparent"]
         new_message["traceparent"] = traceparent
+
+        filepath = json_message['filepath']
 
         worker = Worker()
         msg = worker.call_api()
@@ -107,7 +109,7 @@ def send_to_base(json_message):
         if "unit_test" in json_message:
             return new_message
 
-        current_span.add_event("to next queue")  # pragma: no cover, unit tests end before this span # noqa: E501
-        app.send_task("etd-alma-service.tasks.send_to_dash",
-                      args=[new_message], kwargs={},
-                      queue=os.getenv('c'))  # pragma: no cover, unit tests should not progress the message # noqa: E501
+        # current_span.add_event("to next queue")  # pragma: no cover, unit tests end before this span # noqa: E501
+        # app.send_task("drs2-judaica-update.tasks.send_to_dash",
+        #               args=[new_message], kwargs={},
+        #               queue=os.getenv('PUBLISH_QUEUE_NAME'))  # pragma: no cover, unit tests should not progress the message # noqa: E501
