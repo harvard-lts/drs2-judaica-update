@@ -1,4 +1,4 @@
-from etd.worker import Worker
+from drs2.worker import Worker
 
 
 class TestWorkerIntegrationClass():

@@ -5,5 +5,5 @@
 // default values: 
 //  registryCredentialsId = "${env.REGISTRY_ID}"
 //  registryUri = 'https://registry.lts.harvard.edu'
-def endpoints = ["integration"]
-ltsBasicPipeline.call("etd-base-template", "ETD", "etdadm", "10610", endpoints, "lts-etd-alerts")
+def endpoints = [""]
+ltsBasicPipeline.call("drs2-judaica-update", "ETD", "drsadm", "10610", endpoints, "lts-jenkins-notifications")

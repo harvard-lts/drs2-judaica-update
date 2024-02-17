@@ -16,16 +16,16 @@ RUN apt-get update && apt-get install -y libpq-dev gcc python-dev supervisor ngi
   pip install --upgrade pip && \
   pip install --upgrade --force-reinstall -r /tmp/requirements.txt -i https://pypi.org/simple/ --extra-index-url https://test.pypi.org/simple/
 
-RUN useradd --create-home etdadm
-WORKDIR /home/etdadm
+RUN useradd --create-home drsadm
+WORKDIR /home/drsadm
 
-COPY --chown=etdadm ./ .
+COPY --chown=drsadm ./ .
 
-# Update permissions for the etdadm user and group
+# Update permissions for the drsadm user and group
 COPY change_id.sh /root/change_id.sh
 RUN chmod 755 /root/change_id.sh && \
-  /root/change_id.sh -u 55031 -g 1636
+  /root/change_id.sh -u 61 -g 199
 
-USER etdadm
+USER drsadm
 
 CMD ["celery", "-A", "tasks.tasks", "worker", "--loglevel=info", "--queues", "etd_base_template"]

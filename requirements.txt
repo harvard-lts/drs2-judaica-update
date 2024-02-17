@@ -8,6 +8,7 @@ opentelemetry-sdk==1.19.0
 opentelemetry-exporter-jaeger==1.19.0
 opentelemetry-exporter-otlp-proto-grpc==1.19.0
 opentelemetry-semantic-conventions==0.40b0
+oracledb==2.0.0
 packaging==23.1
 pluggy==1.0.0
 project-paths==1.1.1

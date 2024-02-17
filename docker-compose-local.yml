@@ -5,25 +5,25 @@ version: '3.7'
 
 services:
 
-  etd-base-template:
-    container_name: 'etd-base-template'
+  drs2-judaica-update:
+    container_name: 'drs2-judaica-update'
     build:
       context: './'
       dockerfile: './DockerfileLocal'
     volumes:
-      - './:/home/etdadm'
+      - './:/home/drsadm'
       - '/tmp:/tmp'
     env_file:
       - '.env'
     environment:
       - CELERY_LOG_LEVEL=DEBUG
-      - CONSUME_QUEUE_NAME=etd_base_template
+      - CONSUME_QUEUE_NAME=drs2_judaica_update
       # Worker API
       - '10610:8081'
     networks:
-      - etd-net
+      - drs2-net
 
 # Create a custom docker network if it does not exist already
 networks:
- etd-net:
-    name: etd-net
+ drs2-net:
+    name: drs2-net
