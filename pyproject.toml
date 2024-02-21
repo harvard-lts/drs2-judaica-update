@@ -1,10 +1,10 @@
 [project]
-name = "etd_base_template"
+name = "drs2-judaica-update"
 version = "0.0.1"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  ".", "etd"
+  ".", "drs2"
 ]
 
 [tool.project-paths]
@@ -12,4 +12,4 @@ dir_unit_out = "tests/unit/out/"
 dir_int_out = "tests/integration/out/"
 
 [tool.setuptools]
-packages = ["etd"]
+packages = ["drs2"]
