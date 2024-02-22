@@ -1,12 +1,10 @@
 import argparse
 import os
-import shutil
 from dotenv import load_dotenv
-import time
-import traceback
 from drs2 import DrsDB
 
 load_dotenv()
+
 
 def process_file(input_file):
     """
@@ -57,5 +55,3 @@ if __name__ == "__main__":
         errors = drs_db.update_file_ids(object_ids)
     drs_db.commit()
     drs_db.close()
-
-

@@ -6,74 +6,75 @@ from dotenv import load_dotenv
 
 class DrsDB:
 
-  def __init__(self):
-    load_dotenv()
-    configure_logger()
-    self.db = self._get_db_connection()
+    def __init__(self):
+        load_dotenv()
+        configure_logger()
+        self.db = self._get_db_connection()
 
+    def is_open(self):
+        try:
+            return self.db.ping() is None
+        except cx_Oracle.Error:
+            return False
 
-  def is_open(self):
-    try:
-        return self.db.ping() is None
-    except:
-        return False
+    def update_object_ids(self, object_ids, integration_test=False):
+        """
+          This method updates the REPOSITORY.DRS_OBJECT_UPDATE_STATUS table
+          for a given list of object ids in the database
+        """
 
+        if integration_test:
+            sql = "UPDATE REPOSITORY.TEST_TABLE o " + \
+                  "SET f.DESC_NEEDS_UPDATE = 1, " + \
+                  "o.INDEX_NEEDS_UPDATE = 1, " + \
+                  "o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
+        else:
+            sql = "UPDATE REPOSITORY.DRS_OBJECT_UPDATE_STATUS o SET " + \
+                  "o.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, " + \
+                  "o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
+        cursor = self.db.cursor()
+        cursor.executemany(sql, object_ids, batcherrors=True)
+        errors = []
+        for error in cursor.getbatcherrors():
+            errors.append({'index': error.offset, 'message': error.message})
+        # self.db.commit()
+        # cursor.close()
+        return errors
 
-  def update_object_ids(self, object_ids, integration_test=False):
-    """
-      This method updates the REPOSITORY.DRS_OBJECT_UPDATE_STATUS table 
-      for a given list of object ids in the database
-    """
+    def get_object_ids(self, file_ids):
+        """
+           This method takes a list of file ids and
+           returns a list of associated object ids
+        """
+        object_ids = []
+        bind_file_ids = [":" + str(i + 1) for i in range(len(file_ids))]
+        sql = "SELECT DRS_OBJECT_ID FROM REPOSITORY.DRS_FILE WHERE ID in (%s)"\
+              % (",".join(bind_file_ids))
+        cursor = self.db.cursor()
+        cursor.execute(sql, file_ids)
 
-    if integration_test:
-       sql = "UPDATE REPOSITORY.TEST_TABLE o SET f.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
-    else:
-       sql = "UPDATE REPOSITORY.DRS_OBJECT_UPDATE_STATUS o SET o.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
-    cursor = self.db.cursor()
-    cursor.executemany(sql, object_ids, batcherrors=True)
-    errors = []
-    for error in cursor.getbatcherrors():
-        errors.append({'index': error.offset, 'message': error.message})
-    # self.db.commit()
-    # cursor.close()
-    return errors
+        for row in cursor:
+            object_ids.append(row[0][0])
+        cursor.close()
 
+        return object_ids
 
-  def get_object_ids(self, file_ids):
-    """
-      This method takes a list of file ids and returns a list of associated object ids
-    """
-    object_ids = []
-    bind_file_ids = [":" + str(i + 1) for i in range(len(file_ids))]
-    sql = "SELECT DRS_OBJECT_ID FROM REPOSITORY.DRS_FILE WHERE ID in (%s)" % (",".join(bind_file_ids))
-    cursor = self.db.cursor()
-    cursor.execute(sql, file_ids)
-    
-    for row in cursor:
-        object_ids.append(row[0][0])
-    cursor.close()
+    def commit(self):
+        self.db.commit()
 
-    return object_ids
-  
-  
-  def commit(self):
-    self.db.commit()
-  
-  
-  def close(self):
-    self.db.close()
+    def close(self):
+        self.db.close()
 
-
-  def _get_db_connection(self):
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    dsn_tns = cx_Oracle.makedsn(DB_HOST,
-                                DB_PORT,
-                                DB_NAME)
-    db = cx_Oracle.connect(user=DB_USER,
-                           password=DB_PASSWORD,
-                           dsn=dsn_tns)
-    return db
+    def _get_db_connection(self):
+        DB_HOST = os.getenv('DB_HOST')
+        DB_PORT = os.getenv('DB_PORT')
+        DB_NAME = os.getenv('DB_NAME')
+        DB_USER = os.getenv('DB_USER')
+        DB_PASSWORD = os.getenv('DB_PASSWORD')
+        dsn_tns = cx_Oracle.makedsn(DB_HOST,
+                                    DB_PORT,
+                                    DB_NAME)
+        db = cx_Oracle.connect(user=DB_USER,
+                               password=DB_PASSWORD,
+                               dsn=dsn_tns)
+        return db
