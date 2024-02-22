@@ -19,44 +19,47 @@ class DrsDB:
         return False
 
 
-  def update_file_ids(self, file_ids, integration_test=False):
+  def update_object_ids(self, object_ids, integration_test=False):
     """
-      This method is a helper for querying the DRS DB for object ois urn
-      associated with file-ID
+      This method updates the REPOSITORY.DRS_OBJECT_UPDATE_STATUS table 
+      for a given list of object ids in the database
     """
+
     if integration_test:
-       sql = "UPDATE REPOSITORY.TEST_TABLE f SET f.DESC_NEEDS_UPDATE = 1, f.INDEX_NEEDS_UPDATE = 1, f.CONCURRENT_UPDATE = 0 WHERE f.ID = :1"
+       sql = "UPDATE REPOSITORY.TEST_TABLE o SET f.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
     else:
-       sql = "UPDATE REPOSITORY.DRS_OBJECT_UPDATE_STATUS f SET f.DESC_NEEDS_UPDATE = 1, f.INDEX_NEEDS_UPDATE = 1, f.CONCURRENT_UPDATE = 0 WHERE f.ID = :1"
+       sql = "UPDATE REPOSITORY.DRS_OBJECT_UPDATE_STATUS o SET o.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
     cursor = self.db.cursor()
-    cursor.executemany(sql,file_ids, batcherrors=True)
+    cursor.executemany(sql, object_ids, batcherrors=True)
     errors = []
     for error in cursor.getbatcherrors():
         errors.append({'index': error.offset, 'message': error.message})
-    self.db.commit()
-    cursor.close()
+    # self.db.commit()
+    # cursor.close()
     return errors
 
 
-  def get_object_id(self, file_id):
+  def get_object_ids(self, file_ids):
     """
-      This method is a helper for querying the DRS DB for object ois urn
-      associated with file-ID
+      This method takes a list of file ids and returns a list of associated object ids
     """
-    sql = "SELECT DRS_OBJECT_ID FROM REPOSITORY.DRS_FILE WHERE ID = {}".format(file_id)
+    object_ids = []
+    bind_file_ids = [":" + str(i + 1) for i in range(len(file_ids))]
+    sql = "SELECT DRS_OBJECT_ID FROM REPOSITORY.DRS_FILE WHERE ID in (%s)" % (",".join(bind_file_ids))
     cursor = self.db.cursor()
-    cursor.execute(sql)
-    row = cursor.fetchone()
-
-    if row is None:
-      raise Exception("File not found in DRS DB with ID: {}".format(file_id))
+    cursor.execute(sql, file_ids)
     
-    object_id = row[0][0]
+    for row in cursor:
+        object_ids.append(row[0][0])
     cursor.close()
 
-    return object_id
+    return object_ids
   
-
+  
+  def commit(self):
+    self.db.commit()
+  
+  
   def close(self):
     self.db.close()
 
