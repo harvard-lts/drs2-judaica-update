@@ -1,7 +1,7 @@
 import argparse
 import os
 from dotenv import load_dotenv
-from drs2 import DrsDB
+from drs2.drsdb import DrsDB
 
 load_dotenv()
 
@@ -21,7 +21,7 @@ def process_file(input_file):
 
 
 if __name__ == "__main__":
-    BATCH_SIZE = int(os.getenv("BATCH_SIZE"), 1000)
+    BATCH_SIZE = int(os.getenv("BATCH_SIZE", 1000))
     LOG_FILE = os.getenv("LOGFILE_PATH", "./logs/drs_judaica.log")
 
     # Create an ArgumentParser object
