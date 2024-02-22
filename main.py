@@ -6,7 +6,7 @@ import time
 import traceback
 from drs2 import DrsDB
 
-
+load_dotenv()
 
 def process_file(input_file):
     """
@@ -23,7 +23,6 @@ def process_file(input_file):
 
 
 if __name__ == "__main__":
-    load_dotenv()
     BATCH_SIZE = int(os.getenv("BATCH_SIZE"), 1000)
     LOG_FILE = os.getenv("LOGFILE_PATH", "./logs/drs_judaica.log")
 
