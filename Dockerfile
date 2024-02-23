@@ -8,15 +8,15 @@ RUN apt-get update && \
   pip install --upgrade pip && \
   pip install -r /app/requirements.txt
 
-# RUN useradd --create-home drsadm
+RUN useradd --create-home drsadm
 
 # Write to .bashrc:
 WORKDIR /app
 
-# COPY change_id.sh /root/change_id.sh
-# RUN chmod 755 /root/change_id.sh && \
-#   /root/change_id.sh -u 55017 -g 0
+COPY change_id.sh /root/change_id.sh
+RUN chmod 755 /root/change_id.sh && \
+   /root/change_id.sh -u 55017 -g 0
 
-# USER drsadm
+USER drsadm
 
 CMD ["sh", "-c", "cd /app && bash"]
