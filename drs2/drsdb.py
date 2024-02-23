@@ -1,6 +1,5 @@
 import oracledb as cx_Oracle
 import os
-from . import configure_logger
 from dotenv import load_dotenv
 
 
@@ -8,7 +7,6 @@ class DrsDB:
 
     def __init__(self):
         load_dotenv()
-        configure_logger()
         self.db = self._get_db_connection()
 
     def is_open(self):
@@ -37,8 +35,7 @@ class DrsDB:
         errors = []
         for error in cursor.getbatcherrors():
             errors.append({'index': error.offset, 'message': error.message})
-        self.db.commit()
-        # cursor.close()
+        cursor.close()
         return errors
 
     def get_object_ids(self, file_ids):
@@ -54,7 +51,7 @@ class DrsDB:
         cursor.execute(sql, file_ids)
 
         for row in cursor:
-            object_ids.append(row[0][0])
+            object_ids.append(row)
         cursor.close()
 
         return object_ids
