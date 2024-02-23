@@ -47,6 +47,10 @@ if __name__ == "__main__":
     file_ids = process_file(args.input_file)
     drs_db = DrsDB()
 
+    # open the output file
+    output = open(args.output_file, "w")
+    error_file = open("errors.txt", "w")
+
     logger.info(f"Processing {len(file_ids)} file ids")
     data = []
     for file_id in file_ids:
@@ -60,9 +64,11 @@ if __name__ == "__main__":
                     bad_object_id = data[error['index']]
                     logger.error(f"ERROR: object id {bad_object_id} " +
                                  f"failed to update: {error['message']}")
+                    error_file.write(f"{bad_object_id}")
                     bad_object_ids.append(bad_object_id)
             for object_id in data:
                 if object_id not in bad_object_ids:
+                    output.write(f"{object_id}")
                     logger.info(f"Object id {object_id} updated successfully")
             data = []
             bad_object_ids = []
@@ -75,11 +81,15 @@ if __name__ == "__main__":
                 bad_object_id = data[error['index']]
                 logger.error(f"ERROR: object id {bad_object_id} " +
                              f"failed to update: {error['message']}")
+                error_file.write(f"{bad_object_id}")
                 bad_object_ids.append(bad_object_id)
         for object_id in data:
             if object_id not in bad_object_ids:
+                output.write(f"{object_id}")
                 logger.info(f"Object id {object_id} updated successfully")
         data = []
         bad_object_ids = []
     drs_db.close()
+    error_file.close()
+    output.close()
     logger.info(f"Completed updating {len(file_ids)} file ids")
