@@ -1,9 +1,13 @@
 import argparse
 import os
+import logging
 from dotenv import load_dotenv
 from drs2.drsdb import DrsDB
+from drs2 import configure_logger
 
 load_dotenv()
+configure_logger()
+logger = logging.getLogger('drs2_judaica_update')
 
 
 def process_file(input_file):
@@ -43,15 +47,39 @@ if __name__ == "__main__":
     file_ids = process_file(args.input_file)
     drs_db = DrsDB()
 
+    logger.info(f"Processing {len(file_ids)} file ids")
     data = []
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
             object_ids = drs_db.get_object_ids(data)
             errors = drs_db.update_file_ids(object_ids)
+            bad_object_ids = []
+            if errors:
+                for error in errors:
+                    bad_object_id = data[error['index']]
+                    logger.error(f"ERROR: object id {bad_object_id} " +
+                                 f"failed to update: {error['message']}")
+                    bad_object_ids.append(bad_object_id)
+            for object_id in data:
+                if object_id not in bad_object_ids:
+                    logger.info(f"Object id {object_id} updated successfully")
             data = []
+            bad_object_ids = []
     if data:
         object_ids = drs_db.get_object_ids(data)
         errors = drs_db.update_file_ids(object_ids)
-    drs_db.commit()
+        bad_object_ids = []
+        if errors:
+            for error in errors:
+                bad_object_id = data[error['index']]
+                logger.error(f"ERROR: object id {bad_object_id} " +
+                             f"failed to update: {error['message']}")
+                bad_object_ids.append(bad_object_id)
+        for object_id in data:
+            if object_id not in bad_object_ids:
+                logger.info(f"Object id {object_id} updated successfully")
+        data = []
+        bad_object_ids = []
     drs_db.close()
+    logger.info(f"Completed updating {len(file_ids)} file ids")
