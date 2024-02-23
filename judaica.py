@@ -50,6 +50,10 @@ if __name__ == "__main__":
     # open the output file
     output = open(args.output_file, "w")
     error_file = open("errors.txt", "w")
+    processed_filename = "processed.txt"
+    with open(processed_filename, "a+") as processed_file:
+        processed_content = processed_file.readlines()
+    already_processed_ids = [x.strip() for x in processed_content]
 
     logger.info(f"Processing {len(file_ids)} file ids in {args.input_file}")
     data = []
@@ -58,7 +62,9 @@ if __name__ == "__main__":
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
-            object_ids = drs_db.get_object_ids(data)
+            # return a list of object_ids that are not in already_processed_ids
+            object_ids = list(filter(lambda x: x not in already_processed_ids,
+                                     drs_db.get_object_ids(data)))
             rows_updated, errors = drs_db.update_object_ids(object_ids)
             bad_object_ids = []
             if errors:
@@ -76,11 +82,16 @@ if __name__ == "__main__":
                         logger.info(f"Object id {object_id} " +
                                     "updated successfully")
                         updated_count = updated_count + 1
+                        already_processed_ids.append(object_id)
+                        with open(processed_filename, "a+") as processed_file:
+                            processed_file.write(f"{object_id}\n")
             data = []
             bad_object_ids = []
 
     if data:
-        object_ids = drs_db.get_object_ids(data)
+        # return a list of object_ids that are not in already_processed_ids
+        object_ids = list(filter(lambda x: x not in already_processed_ids,
+                                 drs_db.get_object_ids(data)))
         rows_updated, errors = drs_db.update_object_ids(object_ids)
         bad_object_ids = []
         if errors:
@@ -98,6 +109,9 @@ if __name__ == "__main__":
                     logger.info(f"Object id {object_id} " +
                                 "updated successfully")
                     updated_count = updated_count + 1
+                    already_processed_ids.append(object_id)
+                    with open(processed_filename, "a+") as processed_file:
+                        processed_file.write(f"{object_id}\n")
         data = []
         bad_object_ids = []
 
