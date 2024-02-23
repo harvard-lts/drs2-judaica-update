@@ -57,38 +57,39 @@ if __name__ == "__main__":
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
             object_ids = drs_db.get_object_ids(data)
-            errors = drs_db.update_file_ids(object_ids)
+            errors = drs_db.update_object_ids(object_ids)
             bad_object_ids = []
             if errors:
                 for error in errors:
                     bad_object_id = data[error['index']]
                     logger.error(f"ERROR: object id {bad_object_id} " +
                                  f"failed to update: {error['message']}")
-                    error_file.write(f"{bad_object_id}")
+                    error_file.write(f"{bad_object_id}\n")
                     bad_object_ids.append(bad_object_id)
             for object_id in data:
                 if object_id not in bad_object_ids:
-                    output.write(f"{object_id}")
+                    output.write(f"{object_id}\n")
                     logger.info(f"Object id {object_id} updated successfully")
             data = []
             bad_object_ids = []
     if data:
         object_ids = drs_db.get_object_ids(data)
-        errors = drs_db.update_file_ids(object_ids)
+        errors = drs_db.update_object_ids(object_ids)
         bad_object_ids = []
         if errors:
             for error in errors:
                 bad_object_id = data[error['index']]
                 logger.error(f"ERROR: object id {bad_object_id} " +
                              f"failed to update: {error['message']}")
-                error_file.write(f"{bad_object_id}")
+                error_file.write(f"{bad_object_id}\n")
                 bad_object_ids.append(bad_object_id)
         for object_id in data:
             if object_id not in bad_object_ids:
-                output.write(f"{object_id}")
+                output.write(f"{object_id}\n")
                 logger.info(f"Object id {object_id} updated successfully")
         data = []
         bad_object_ids = []
+    drs_db.commit()
     drs_db.close()
     error_file.close()
     output.close()
