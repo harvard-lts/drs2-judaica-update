@@ -32,11 +32,12 @@ class DrsDB:
                   "o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
         cursor = self.db.cursor()
         cursor.executemany(sql, object_ids, batcherrors=True)
+        rows_updated = cursor.rowcount
         errors = []
         for error in cursor.getbatcherrors():
             errors.append({'index': error.offset, 'message': error.message})
         cursor.close()
-        return errors
+        return rows_updated, errors
 
     def get_object_ids(self, file_ids):
         """

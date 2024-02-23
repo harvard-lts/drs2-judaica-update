@@ -51,13 +51,15 @@ if __name__ == "__main__":
     output = open(args.output_file, "w")
     error_file = open("errors.txt", "w")
 
-    logger.info(f"Processing {len(file_ids)} file ids")
+    logger.info(f"Processing {len(file_ids)} file ids in {args.input_file}")
     data = []
+    error_count = 0
+    updated_count = 0
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
             object_ids = drs_db.get_object_ids(data)
-            errors = drs_db.update_object_ids(object_ids)
+            rows_updated, errors = drs_db.update_object_ids(object_ids)
             bad_object_ids = []
             if errors:
                 for error in errors:
@@ -66,15 +68,19 @@ if __name__ == "__main__":
                                  f"failed to update: {error['message']}")
                     error_file.write(f"{bad_object_id}\n")
                     bad_object_ids.append(bad_object_id)
-            for object_id in data:
-                if object_id not in bad_object_ids:
-                    output.write(f"{object_id}\n")
-                    logger.info(f"Object id {object_id} updated successfully")
+                    error_count = error_count + 1
+            if rows_updated:
+                for object_id in data:
+                    if object_id not in bad_object_ids:
+                        output.write(f"{object_id}\n")
+                        logger.info(f"Object id {object_id} " +
+                                    "updated successfully")
+                        updated_count = updated_count + 1
             data = []
             bad_object_ids = []
     if data:
         object_ids = drs_db.get_object_ids(data)
-        errors = drs_db.update_object_ids(object_ids)
+        rows_updated, errors = drs_db.update_object_ids(object_ids)
         bad_object_ids = []
         if errors:
             for error in errors:
@@ -83,14 +89,23 @@ if __name__ == "__main__":
                              f"failed to update: {error['message']}")
                 error_file.write(f"{bad_object_id}\n")
                 bad_object_ids.append(bad_object_id)
-        for object_id in data:
-            if object_id not in bad_object_ids:
-                output.write(f"{object_id}\n")
-                logger.info(f"Object id {object_id} updated successfully")
+                error_count = error_count + 1
+        if rows_updated:
+            for object_id in data:
+                if object_id not in bad_object_ids:
+                    output.write(f"{object_id}\n")
+                    logger.info(f"Object id {object_id} " +
+                                "updated successfully")
+                    updated_count = updated_count + 1
         data = []
         bad_object_ids = []
     drs_db.commit()
     drs_db.close()
     error_file.close()
+    # delete the error file if it is empty
+    if os.stat("errors.txt").st_size == 0:
+        os.remove("errors.txt")
     output.close()
-    logger.info(f"Completed updating {len(file_ids)} file ids")
+    logger.info(f"Completed processing {len(file_ids)} file ids")
+    logger.info(f"Updated {updated_count} object ids")
+    logger.info(f"Failed to update {error_count} object ids")
