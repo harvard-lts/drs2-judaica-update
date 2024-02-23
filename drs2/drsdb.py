@@ -37,7 +37,7 @@ class DrsDB:
         errors = []
         for error in cursor.getbatcherrors():
             errors.append({'index': error.offset, 'message': error.message})
-        # self.db.commit()
+        self.db.commit()
         # cursor.close()
         return errors
 
