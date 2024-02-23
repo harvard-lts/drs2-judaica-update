@@ -15,10 +15,10 @@ Currently contains 1 script that:
 
 ## Running the script
 - For Usage
-  - `python3 scripts/judaica.py`
+  - `python3 judaica.py`
 - Run according to Usage
   - Place file in same dir as script
-  - `python3 scripts/judaica.py -i input.txt -o output.txt`
+  - `python3 judaica.py -i input.txt -o output.txt`
 
 ## Notes
 - The script is set up to overwrite a given output file on subsequent runs 
