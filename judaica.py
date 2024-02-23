@@ -101,10 +101,7 @@ if __name__ == "__main__":
         data = []
         bad_object_ids = []
 
-    # commit the changes to the database
-    drs_db.commit()
     drs_db.close()
-
     error_file.close()
     output.close()
     # delete the error file if it is empty
