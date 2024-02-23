@@ -78,6 +78,7 @@ if __name__ == "__main__":
                         updated_count = updated_count + 1
             data = []
             bad_object_ids = []
+
     if data:
         object_ids = drs_db.get_object_ids(data)
         rows_updated, errors = drs_db.update_object_ids(object_ids)
@@ -99,13 +100,20 @@ if __name__ == "__main__":
                     updated_count = updated_count + 1
         data = []
         bad_object_ids = []
+
+    # commit the changes to the database
     drs_db.commit()
     drs_db.close()
+
     error_file.close()
+    output.close()
     # delete the error file if it is empty
     if os.stat("errors.txt").st_size == 0:
         os.remove("errors.txt")
-    output.close()
+    # delete the output file if it is empty
+    if os.stat(args.output_file).st_size == 0:
+        os.remove(args.output_file)
+
     logger.info(f"Completed processing {len(file_ids)} file ids")
     logger.info(f"Updated {updated_count} object ids")
     logger.info(f"Failed to update {error_count} object ids")

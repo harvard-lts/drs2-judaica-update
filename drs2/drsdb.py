@@ -18,7 +18,8 @@ class DrsDB:
     def update_object_ids(self, object_ids, integration_test=False):
         """
           This method updates the REPOSITORY.DRS_OBJECT_UPDATE_STATUS table
-          for a given list of object ids in the database
+          for a given list of object ids in the database. DRS automatically
+          deletes the rows from the table when the row is updated.
         """
 
         if integration_test:
