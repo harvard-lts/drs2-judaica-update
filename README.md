@@ -2,10 +2,10 @@
 
 Scripts for judaica remediation.  
 Currently contains 1 script that:
-- reads a file of file ids
-- translates those file ids to object ids
-- updates the DRS_OBJECT_UPDATE_STATUS table
-- logs errors/updated object ids
+- Reads a file of file ids, one id per line.
+- Translates those file ids to object ids.
+- Updates the DRS_OBJECT_UPDATE_STATUS table.
+- Logs errors/updated object ids.
 
 ## Setup, Building the docker container
 - copy env-example to .env and fill values
@@ -19,7 +19,9 @@ Currently contains 1 script that:
 - Run according to Usage
   - Place file in same dir as script
   - `python3 judaica.py -i input.txt -o output.txt`
+  The output file is a list of successfully updated object ids. 
+  Object ids of failed updated will be written to `errors.txt`.
 
 ## Notes
-- The script is set up to overwrite a given output file on subsequent runs 
+- The script is set up to overwrite a given output file on subsequent runs.
   
