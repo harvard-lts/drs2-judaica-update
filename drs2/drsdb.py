@@ -23,14 +23,16 @@ class DrsDB:
         """
 
         if integration_test:
-            sql = "UPDATE REPOSITORY.TEST_TABLE o " + \
-                  "SET f.DESC_NEEDS_UPDATE = 1, " + \
-                  "o.INDEX_NEEDS_UPDATE = 1, " + \
-                  "o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
-        else:
             sql = "UPDATE REPOSITORY.DRS_OBJECT_UPDATE_STATUS o SET " + \
                   "o.DESC_NEEDS_UPDATE = 1, o.INDEX_NEEDS_UPDATE = 1, " + \
+                  "o.MONGO_NEEDS_UPDATE = 1, o.WRITE_TO_QUEUE = 0, " + \
                   "o.CONCURRENT_UPDATE = 0 WHERE o.ID = :1"
+        else:
+            sql = "INSERT INTO REPOSITORY.DRS_OBJECT_UPDATE_STATUS o " + \
+                  "(o.ID, o.DESC_NEEDS_UPDATE, o.INDEX_NEEDS_UPDATE, " + \
+                  "o.MONGO_NEEDS_UPDATE, o.WRITE_TO_QUEUE, " + \
+                  "o.CONCURRENT_UPDATE, o.IN_PROCESS) VALUES " + \
+                  "(:1, 1, 1, 1, 0, 0, 1)"
         cursor = self.db.cursor()
         cursor.executemany(sql, object_ids, batcherrors=True)
         rows_updated = cursor.rowcount
