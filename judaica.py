@@ -51,67 +51,94 @@ if __name__ == "__main__":
     output = open(args.output_file, "w")
     error_file = open("errors.txt", "w")
     processed_filename = "processed.txt"
-    with open(processed_filename, "a+") as processed_file:
-        processed_content = processed_file.readlines()
-    already_processed_ids = [x.strip() for x in processed_content]
+    already_processed_ids = []
+    if (os.path.exists(processed_filename)):
+        with open(processed_filename, "r") as processed_file:
+            processed_content = processed_file.readlines()
+        already_processed_ids = [(int(x.strip()),) for x in processed_content]
 
     logger.info(f"Processing {len(file_ids)} file ids in {args.input_file}")
     data = []
     error_count = 0
     updated_count = 0
+    skipped_count = 0
+
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
+            obj_tuple_list = drs_db.get_object_ids(data)
             # return a list of object_ids that are not in already_processed_ids
             object_ids = list(filter(lambda x: x not in already_processed_ids,
-                                     drs_db.get_object_ids(data)))
-            rows_updated, errors = drs_db.update_object_ids(object_ids)
+                                     obj_tuple_list))
+            skipped_object_ids = list(filter(lambda x: x in
+                                             already_processed_ids,
+                                             obj_tuple_list))
+            if skipped_object_ids:
+                for skipped_object_id in skipped_object_ids:
+                    logger.info(f"Object id {skipped_object_id[0]} " +
+                                "already processed, skipping...")
+                    skipped_count = skipped_count + 1
+            rows_updated = []
+            errors = []
+            if object_ids:
+                rows_updated, errors = drs_db.update_object_ids(object_ids)
             bad_object_ids = []
             if errors:
                 for error in errors:
-                    bad_object_id = data[error['index']]
+                    bad_object_id = object_ids[error['index']][0]
                     logger.error(f"ERROR: object id {bad_object_id} " +
                                  f"failed to update: {error['message']}")
                     error_file.write(f"{bad_object_id}\n")
                     bad_object_ids.append(bad_object_id)
                     error_count = error_count + 1
             if rows_updated:
-                for object_id in data:
+                for object_id in object_ids:
                     if object_id not in bad_object_ids:
-                        output.write(f"{object_id}\n")
-                        logger.info(f"Object id {object_id} " +
+                        output.write(f"{object_id[0]}\n")
+                        logger.info(f"Object id {object_id[0]} " +
                                     "updated successfully")
                         updated_count = updated_count + 1
-                        already_processed_ids.append(object_id)
+                        already_processed_ids.append(object_id[0])
                         with open(processed_filename, "a+") as processed_file:
-                            processed_file.write(f"{object_id}\n")
+                            processed_file.write(f"{object_id[0]}\n")
             data = []
             bad_object_ids = []
 
     if data:
+        obj_tuple_list = drs_db.get_object_ids(data)
         # return a list of object_ids that are not in already_processed_ids
         object_ids = list(filter(lambda x: x not in already_processed_ids,
-                                 drs_db.get_object_ids(data)))
-        rows_updated, errors = drs_db.update_object_ids(object_ids)
+                                 obj_tuple_list))
+        skipped_object_ids = list(filter(lambda x: x in already_processed_ids,
+                                         obj_tuple_list))
+        if skipped_object_ids:
+            for skipped_object_id in skipped_object_ids:
+                logger.info(f"Object id {skipped_object_id[0]} " +
+                            "already processed, skipping...")
+                skipped_count = skipped_count + 1
+        rows_updated = []
+        errors = []
+        if object_ids:
+            rows_updated, errors = drs_db.update_object_ids(object_ids)
         bad_object_ids = []
         if errors:
             for error in errors:
-                bad_object_id = data[error['index']]
+                bad_object_id = object_ids[error['index']][0]
                 logger.error(f"ERROR: object id {bad_object_id} " +
                              f"failed to update: {error['message']}")
                 error_file.write(f"{bad_object_id}\n")
                 bad_object_ids.append(bad_object_id)
                 error_count = error_count + 1
         if rows_updated:
-            for object_id in data:
+            for object_id in object_ids:
                 if object_id not in bad_object_ids:
-                    output.write(f"{object_id}\n")
-                    logger.info(f"Object id {object_id} " +
+                    output.write(f"{object_id[0]}\n")
+                    logger.info(f"Object id {object_id[0]} " +
                                 "updated successfully")
                     updated_count = updated_count + 1
-                    already_processed_ids.append(object_id)
+                    already_processed_ids.append(object_id[0])
                     with open(processed_filename, "a+") as processed_file:
-                        processed_file.write(f"{object_id}\n")
+                        processed_file.write(f"{object_id[0]}\n")
         data = []
         bad_object_ids = []
 
