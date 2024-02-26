@@ -88,7 +88,7 @@ if __name__ == "__main__":
                         "already processed, skipping...")
             skipped_count += 1
             continue
-        ocfl_path = drs_db.get_descriptor_path(object_id)
+        ocfl_path, storage_class = drs_db.get_descriptor_path(object_id)
         if ocfl_path:
             ocfl_paths = get_updated_paths(ocfl_path)
             for path in ocfl_paths:

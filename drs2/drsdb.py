@@ -80,3 +80,19 @@ class DrsDB:
                                password=DB_PASSWORD,
                                dsn=dsn_tns)
         return db
+
+    def get_descriptor_path(self, object_id):
+        path = None
+        storage_class = None
+        object_id_tuple = (object_id,)
+        sql = "SELECT df.FILE_PATH, sc.code FROM REPOSITORY.DRS_FILE df, " + \
+              "REPOSITORY.STORAGE_CLASS sc WHERE " + \
+              "df.storage_class_id = sc.id and df.DRS_OBJECT_ID = :1 " + \
+              "AND df.USAGE_CLASS = 'DESCRIPTOR'"
+        cursor = self.db.cursor()
+        cursor.execute(sql, object_id_tuple)
+        row = cursor.fetchone()
+        if row:
+            path = row[0]
+            storage_class = row[1]
+        return path, storage_class
