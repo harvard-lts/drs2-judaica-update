@@ -32,7 +32,7 @@ class DrsDB:
                   "(o.ID, o.DESC_NEEDS_UPDATE, o.INDEX_NEEDS_UPDATE, " + \
                   "o.MONGO_NEEDS_UPDATE, o.WRITE_TO_QUEUE, " + \
                   "o.CONCURRENT_UPDATE, o.IN_PROCESS) VALUES " + \
-                  "(:1, 1, 1, 1, 0, 0, 1)"
+                  "(:1, 1, 1, 1, 0, 0, 0)"
         cursor = self.db.cursor()
         cursor.executemany(sql, object_ids, batcherrors=True)
         rows_updated = cursor.rowcount
