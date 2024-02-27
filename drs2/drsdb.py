@@ -22,18 +22,14 @@ class DrsDB:
           deletes the rows from the table when the row is updated.
         """
 
-        # sql = "INSERT INTO REPOSITORY.DRS_OBJECT_UPDATE_STATUS o " + \
-        #           "(o.ID, o.DESC_NEEDS_UPDATE, o.INDEX_NEEDS_UPDATE, " + \
-        #           "o.MONGO_NEEDS_UPDATE, o.WRITE_TO_QUEUE, " + \
-        #           "o.CONCURRENT_UPDATE, o.IN_PROCESS) VALUES " + \
-        #           "(:1, 1, 1, 1, 0, 0, 0)"
-        sql = "merge into drs_object_update_status a using " + \
-              "(select id from drs_object where id = :1) b on (a.id = b.id) " + \
+        sql = "merge into repository.drs_object_update_status a using " + \
+              "(select id from repository.drs_object where id = :1) b " + \
+              "on (a.id = b.id) " + \
               "when matched then update " + \
-			  "set a.write_to_queue=0, a.desc_needs_update=1, " + \
+              "set a.write_to_queue=0, a.desc_needs_update=1, " + \
               "a.index_needs_update=1, a.mongo_needs_update=1 " + \
               "when not matched then " + \
-			  "insert (a.id, a.desc_needs_update, a.index_needs_update, " + \
+              "insert (a.id, a.desc_needs_update, a.index_needs_update, " + \
               "a.in_process, a.concurrent_update, a.mongo_needs_update, " + \
               "a.write_to_queue) values (b.id, 1, 1, 0, 0, 1, 0)"
         cursor = self.db.cursor()
