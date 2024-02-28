@@ -66,7 +66,7 @@ if __name__ == "__main__":
     drs_db = DrsDB()
 
     # open the output file
-    output = open(args.output_file, "w")
+    output = open(args.output_file, "a")
     error_file = open("errors.txt", "w")
     processed_filename = "processed_ocfl.txt"
     already_processed_ids = []
