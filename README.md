@@ -13,14 +13,25 @@ Currently contains 1 script that:
 ## Running the docker container
 - `docker run --rm --name my-judaica-update --mount type=bind,source=${PWD},target=/app -it drs2-judaica-update` 
 
-## Running the script
+## Running the script to populate the DRS update table
 - For Usage
   - `python3 judaica.py`
 - Run according to Usage
-  - Place file in same dir as script
+  - Place input file in same dir as script
   - `python3 judaica.py -i input.txt -o output.txt`
   The output file is a list of successfully updated object ids. 
   Object ids of failed updated will be written to `errors.txt`.
+
+## Running the script to create S3 path CSV
+- For Usage
+  - `python3 ocflpaths.py`
+- Run according to Usage
+  - Place input file in same dir as script
+  - `python3 ocflpaths.py -i object_ids.txt -o ocflpaths.txt`
+  The output file is a CSV containing the S3 path and disposition
+  of the descriptor and latest OCFL files for all objects
+  in the input file.
+  Failures will be written to `errors.txt`.
 
 ## Notes
 - The script is set up to overwrite a given output file on subsequent runs.
