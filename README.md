@@ -15,19 +15,19 @@ Currently contains 1 script that:
 
 ## Running the script to populate the DRS update table
 - For Usage
-  - `python3 judaica.py`
+  - `judaica.py`
 - Run according to Usage
   - Place input file in same dir as script
-  - `python3 judaica.py -i input.txt -o output.txt`
+  - `judaica.py -i input.txt -o output.txt`
   The output file is a list of successfully updated object ids. 
   Object ids of failed updated will be written to `errors.txt`.
 
 ## Running the script to create S3 path CSV
 - For Usage
-  - `python3 ocflpaths.py`
+  - `ocflpaths.py`
 - Run according to Usage
   - Place input file in same dir as script
-  - `python3 ocflpaths.py -i object_ids.txt -o ocflpaths.txt`
+  - `ocflpaths.py -i object_ids.txt -o ocflpaths.txt`
   The output file is a CSV containing the S3 path and disposition
   of the descriptor and latest OCFL files for all objects
   in the input file.
