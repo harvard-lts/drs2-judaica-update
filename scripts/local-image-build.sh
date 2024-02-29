@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t drs2-judaica-update:latest . -f Dockerfile
+docker build -force-recreate -t drs2-judaica-update:latest . -f Dockerfile

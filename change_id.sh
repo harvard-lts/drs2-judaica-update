@@ -15,7 +15,7 @@ SCRIPTNAME=$(basename $0)
 # Username and Group Name to be modified. In future will pull this from
 # an external file to allow for flexibility in other deployment models.
 USERNAME="drsadm"
-GROUPNAME="drsadm"
+GROUPNAME="appadmin"
 
 # Usage Function
 function usage() {
