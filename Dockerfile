@@ -15,7 +15,7 @@ WORKDIR /app
 
 COPY change_id.sh /root/change_id.sh
 RUN chmod 755 /root/change_id.sh && \
-   /root/change_id.sh -u 55017 -g 0
+   /root/change_id.sh -u 61 -g 199
 
 USER drsadm
 
