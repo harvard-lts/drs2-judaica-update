@@ -18,7 +18,8 @@ def process_judaica(input_dir, output_dir):
     writes files of object ids to the output dir.
     """
     DELAY_SECS = int(os.getenv("DELAY_SECS", 5))
-    judaica_path = os.getenv("JUDAICA_PATH", "/home/drsadm/bin/judaica.py")
+    judaica_path = os.getenv("JUDAICA_PATH",
+                             "/home/drsadm/bin/judaica.py")
     files_processed = 0
 
     for f in os.listdir(input_dir):
@@ -41,7 +42,8 @@ def process_ocflpath(input_dir, output_dir):
     writes files of ocfl paths to the output dir.
     """
     DELAY_SECS = int(os.getenv("DELAY_SECS", 5))
-    ocflpaths_path = os.getenv("OCFLPATHS_PATH", "/home/drsadm/bin/ocflpaths.py")
+    ocflpaths_path = os.getenv("OCFLPATHS_PATH",
+                               "/home/drsadm/bin/ocflpaths.py")
     files_processed = 0
 
     for f in os.listdir(input_dir):
