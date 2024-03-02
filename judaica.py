@@ -22,6 +22,7 @@ def process_file(input_file):
 
     # remove whitespace characters like `\n` at the end of each line
     file_ids = [x.strip() for x in content]
+    file_ids = list(set(file_ids))  # deduplicate
     return file_ids
 
 
