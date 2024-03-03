@@ -25,7 +25,7 @@ def configure_logger():  # pragma: no cover
     logger = logging.getLogger('drs2_judaica_update')
     logger.addHandler(console_handler)
     # Defaults to console logging
-    if os.getenv("CONSOLE_LOGGING_ONLY", "true") == "false":
+    if ((os.getenv("CONSOLE_LOGGING_ONLY", "true")).strip()) == "false":
         file_handler = TimedRotatingFileHandler(
             filename=f"{log_file_path}/{container_id}_console_{timestamp}.log",
             when=LOG_ROTATION,
