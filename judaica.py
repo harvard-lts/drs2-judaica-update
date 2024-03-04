@@ -158,4 +158,5 @@ if __name__ == "__main__":
 
     logger.info(f"Completed processing {len(file_ids)} file ids")
     logger.info(f"Updated {updated_count} object ids")
+    logger.info(f"Skipped {skipped_count} object ids")
     logger.info(f"Failed to update {error_count} object ids")

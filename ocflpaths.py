@@ -95,7 +95,7 @@ if __name__ == "__main__":
         if drs_db.check_object_in_update_queue(object_id):
             logger.error(f"ERROR: Object id {object_id} " +
                          "is STILL in the update queue, skipping...")
-            skipped_count += 1
+            error_count += 1
             continue
         ocfl_path, storage_class = drs_db.get_descriptor_path(object_id)
         if ocfl_path:
@@ -123,4 +123,5 @@ if __name__ == "__main__":
 
     logger.info(f"Completed processing {len(object_ids)} object ids")
     logger.info(f"Updated {updated_count} object ids")
+    logger.info(f"Skipped {skipped_count} object ids")
     logger.info(f"Failed to update {error_count} object ids")

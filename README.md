@@ -33,6 +33,19 @@ Currently contains 1 script that:
   in the input file.
   Failures will be written to `errors.txt`.
 
+## Running the controller script to invoke the other two scripts
+- For usage
+  - `populate.py`
+- Set up directory structure (example)
+  - `mkdir ./io ./io/judaica ./io/ocfl-input ./io/ocfl-paths`
+  - Place input file(s) containing file IDs in `./io/judaica`
+- Run according to usage
+  - `populate.py -i /app/io/judaica -o /app/io/ocfl-input -x /app/io/ocfl-paths`
+  - This will call `judaica.py` for each file in `io/judaica`. After the output 
+  has been created in `io/ocfl-input`, it will pass each output file to `ocflpaths.py`. 
+  The final output of CSV files containg S3 paths will be written to `io/ocfl-paths`
+  There is a configurable delay between calls, which defaults to 5 seconds.
+
 ## Notes
 - The script is set up to overwrite a given output file on subsequent runs.
   
