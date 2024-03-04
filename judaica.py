@@ -70,7 +70,6 @@ if __name__ == "__main__":
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
-            data = list(set(data))  # remove duplicates
             obj_tuple_list = drs_db.get_object_ids(data)
             # return a list of object_ids that are not in already_processed_ids
             object_ids = list(filter(lambda x: x not in already_processed_ids,
@@ -110,7 +109,6 @@ if __name__ == "__main__":
             bad_object_ids = []
 
     if data:
-        data = list(set(data))  # remove duplicates
         obj_tuple_list = drs_db.get_object_ids(data)
         # return a list of object_ids that are not in already_processed_ids
         object_ids = list(filter(lambda x: x not in already_processed_ids,
