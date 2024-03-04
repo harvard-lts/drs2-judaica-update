@@ -95,3 +95,18 @@ class DrsDB:
             path = row[0]
             storage_class = row[1]
         return path, storage_class
+
+    def check_object_in_update_queue(self, object_id):
+        """
+        This method checks if the object is in the update queue
+        """
+        object_id_tuple = (object_id,)
+        in_queue = False
+        sql = "SELECT ID FROM REPOSITORY.DRS_OBJECT_UPDATE_STATUS " + \
+              "WHERE ID = :1"
+        cursor = self.db.cursor()
+        cursor.execute(sql, object_id_tuple)
+        row = cursor.fetchone()
+        if row:
+            in_queue = True
+        return in_queue

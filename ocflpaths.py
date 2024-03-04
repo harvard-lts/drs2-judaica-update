@@ -92,6 +92,11 @@ if __name__ == "__main__":
                         "already processed, skipping...")
             skipped_count += 1
             continue
+        if drs_db.check_object_in_update_queue(object_id):
+            logger.error(f"ERROR: Object id {object_id} " +
+                        "is already in the update queue, skipping...")
+            skipped_count += 1
+            continue
         ocfl_path, storage_class = drs_db.get_descriptor_path(object_id)
         if ocfl_path:
             ocfl_paths = get_updated_paths(ocfl_path)
