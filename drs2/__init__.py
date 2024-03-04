@@ -14,7 +14,7 @@ timestamp = datetime.today().strftime('%Y-%m-%d')
 def configure_logger():  # pragma: no cover
     log_level = os.getenv("APP_LOG_LEVEL", "WARNING")
     log_file_path = os.getenv("LOGFILE_PATH",
-                              "./logs/drs2_judaica_update")
+                              "/app/logs/drs2_judaica_update")
     formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - ' +
                 '[%(filename)s:%(funcName)s:%(lineno)d] - %(message)s')
@@ -25,7 +25,7 @@ def configure_logger():  # pragma: no cover
     logger = logging.getLogger('drs2_judaica_update')
     logger.addHandler(console_handler)
     # Defaults to console logging
-    if os.getenv("CONSOLE_LOGGING_ONLY", "true") == "false":
+    if ((os.getenv("CONSOLE_LOGGING_ONLY", "true")).strip()) == "false":
         file_handler = TimedRotatingFileHandler(
             filename=f"{log_file_path}/{container_id}_console_{timestamp}.log",
             when=LOG_ROTATION,

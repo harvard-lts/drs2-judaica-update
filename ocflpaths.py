@@ -21,7 +21,10 @@ def process_file(input_file):
         content = f.readlines()
 
     # remove whitespace characters like `\n` at the end of each line
-    object_ids = [x.strip() for x in content]
+    object_ids = [x.strip() for x in list(filter(lambda x:
+                                                 (x.strip()).isdigit(),
+                                                 content))]
+    object_ids = list(set(object_ids))  # deduplicate
     return object_ids
 
 
@@ -87,6 +90,11 @@ if __name__ == "__main__":
         if object_id in already_processed_ids:
             logger.info(f"Object id {object_id} " +
                         "already processed, skipping...")
+            skipped_count += 1
+            continue
+        if drs_db.check_object_in_update_queue(object_id):
+            logger.error(f"ERROR: Object id {object_id} " +
+                         "is STILL in the update queue, skipping...")
             skipped_count += 1
             continue
         ocfl_path, storage_class = drs_db.get_descriptor_path(object_id)
