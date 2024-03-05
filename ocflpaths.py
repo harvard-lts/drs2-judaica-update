@@ -28,7 +28,7 @@ def process_file(input_file):
     return object_ids
 
 
-def get_updated_paths(descriptor_path):
+def get_updated_paths(descriptor_path, descriptor_storage_class):
     STORAGE_CLASS = "RE"
     INVENTORY_JSON = "inventory.json"
     INVENTORY_JSON_SHA512 = "inventory.json.sha512"
@@ -42,7 +42,7 @@ def get_updated_paths(descriptor_path):
                          ", " + STORAGE_CLASS)
     updated_paths.append(descriptor_root + INVENTORY_JSON_SHA512 +
                          ", " + STORAGE_CLASS)
-    updated_paths.append(descriptor_path + ", " + STORAGE_CLASS)
+    updated_paths.append(descriptor_path + ", " + descriptor_storage_class)
     return updated_paths
 
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             continue
         ocfl_path, storage_class = drs_db.get_descriptor_path(object_id)
         if ocfl_path:
-            ocfl_paths = get_updated_paths(ocfl_path)
+            ocfl_paths = get_updated_paths(ocfl_path, storage_class)
             for path in ocfl_paths:
                 output.write(f"{path}\n")
             updated_count += 1
