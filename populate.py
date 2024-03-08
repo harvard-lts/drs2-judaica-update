@@ -55,7 +55,8 @@ def process_ocflpath(input_dir, output_dir):
             os.system(f"{ocflpaths_path} -i {input_file} -o {output_file}")
             files_processed = files_processed + 1
             logger.info(f"Processing ocfl paths from {input_file} completed")
-            time.sleep(DELAY_SECS)
+            # Sleep briefly to avoid overloading the database
+            time.sleep(60)
 
     return files_processed
 
