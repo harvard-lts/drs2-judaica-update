@@ -66,17 +66,32 @@ if __name__ == "__main__":
     error_count = 0
     updated_count = 0
     skipped_count = 0
+    unique_object_ids = []
 
+    # get list of unique object ids
     for file_id in file_ids:
         data.append(file_id)
         if len(data) % BATCH_SIZE == 0:
             obj_tuple_list = drs_db.get_object_ids(data)
+            unique_object_ids = unique_object_ids + obj_tuple_list
+            data = []
+    if data:
+        obj_tuple_list = drs_db.get_object_ids(data)
+        unique_object_ids = unique_object_ids + obj_tuple_list
+    # deduplicate list
+    unique_object_ids = list(set(unique_object_ids))
+
+    # process the object ids in batches
+    data = []
+    for object_id in unique_object_ids:
+        data.append(object_id)
+        if len(data) % BATCH_SIZE == 0:
             # return a list of object_ids that are not in already_processed_ids
             object_ids = list(filter(lambda x: x not in already_processed_ids,
-                                     obj_tuple_list))
+                                     data))
             skipped_object_ids = list(filter(lambda x: x in
                                              already_processed_ids,
-                                             obj_tuple_list))
+                                             data))
             if skipped_object_ids:
                 for skipped_object_id in skipped_object_ids:
                     logger.info(f"Object id {skipped_object_id[0]} " +
@@ -109,12 +124,11 @@ if __name__ == "__main__":
             bad_object_ids = []
 
     if data:
-        obj_tuple_list = drs_db.get_object_ids(data)
         # return a list of object_ids that are not in already_processed_ids
         object_ids = list(filter(lambda x: x not in already_processed_ids,
-                                 obj_tuple_list))
+                                 data))
         skipped_object_ids = list(filter(lambda x: x in already_processed_ids,
-                                         obj_tuple_list))
+                                         data))
         if skipped_object_ids:
             for skipped_object_id in skipped_object_ids:
                 logger.info(f"Object id {skipped_object_id[0]} " +
@@ -160,3 +174,4 @@ if __name__ == "__main__":
     logger.info(f"Updated {updated_count} object ids")
     logger.info(f"Skipped {skipped_count} object ids")
     logger.info(f"Failed to update {error_count} object ids")
+    logger.info(f"Unique object ids processed: {len(unique_object_ids)}")
