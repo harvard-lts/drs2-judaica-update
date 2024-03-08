@@ -17,7 +17,7 @@ def process_judaica(input_dir, output_dir):
     This function processes all judaica files in the input dir &
     writes files of object ids to the output dir.
     """
-    DELAY_SECS = int(os.getenv("DELAY_SECS", 5))
+    DELAY_SECS_JUDAICA = int(os.getenv("DELAY_SECS_JUDAICA", 5))
     judaica_path = os.getenv("JUDAICA_PATH",
                              "/home/drsadm/bin/judaica.py")
     files_processed = 0
@@ -31,7 +31,7 @@ def process_judaica(input_dir, output_dir):
             os.system(f"{judaica_path} -i {input_file} -o {output_file}")
             files_processed = files_processed + 1
             logger.info(f"Processing {input_file} for judaica complete")
-            time.sleep(DELAY_SECS)
+            time.sleep(DELAY_SECS_JUDAICA)
 
     return files_processed
 
@@ -41,7 +41,7 @@ def process_ocflpath(input_dir, output_dir):
     This function processes all files of object ids in the input dir &
     writes files of ocfl paths to the output dir.
     """
-    DELAY_SECS = int(os.getenv("DELAY_SECS", 5))
+    DELAY_SECS_OCFLPATHS = int(os.getenv("DELAY_SECS_OCFLPATHS", 5))
     ocflpaths_path = os.getenv("OCFLPATHS_PATH",
                                "/home/drsadm/bin/ocflpaths.py")
     files_processed = 0
@@ -56,7 +56,7 @@ def process_ocflpath(input_dir, output_dir):
             files_processed = files_processed + 1
             logger.info(f"Processing ocfl paths from {input_file} completed")
             # Sleep briefly to avoid overloading the database
-            time.sleep(60)
+            time.sleep(DELAY_SECS_OCFLPATHS)
 
     return files_processed
 
