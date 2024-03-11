@@ -4,12 +4,10 @@ version = "0.0.1"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  ".", "drs2"
+  "."
 ]
 
 [tool.project-paths]
 dir_unit_out = "tests/unit/out/"
 dir_int_out = "tests/integration/out/"
 
-[tool.setuptools]
-packages = ["drs2"]
