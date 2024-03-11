@@ -4,7 +4,7 @@ import argparse
 import os
 import logging
 from dotenv import load_dotenv
-from drs2 import configure_logger
+from drs2db import configure_logger
 import time
 
 load_dotenv()

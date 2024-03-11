@@ -3,8 +3,8 @@ import argparse
 import os
 import logging
 from dotenv import load_dotenv
-from drs2.drsdb import DrsDB
-from drs2 import configure_logger
+from drs2db.drsdb import DrsDB
+from drs2db import configure_logger
 
 load_dotenv()
 configure_logger()
