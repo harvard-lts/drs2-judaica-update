@@ -11,5 +11,3 @@ pythonpath = [
 dir_unit_out = "tests/unit/out/"
 dir_int_out = "tests/integration/out/"
 
-[tool.setuptools]
-packages = ["."]
