@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM python
 
 COPY requirements.txt /tmp/
 
@@ -6,7 +6,7 @@ RUN apt-get update && \
   apt-get install -y libaio1 libaio-dev curl unzip vim git less && \
   apt-get install -y pip && \
   pip install --upgrade pip && \
-  pip install -r /tmp/requirements.txt
+  pip install --upgrade --force-reinstall -r /tmp/requirements.txt -i https://pypi.org/simple/
 
 RUN useradd --create-home drsadm
 
