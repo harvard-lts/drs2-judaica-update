@@ -35,5 +35,5 @@ def configure_logger():  # pragma: no cover
         logger.addHandler(file_handler)
 
     logger.setLevel(log_level)
-    # log the LOG_FILE_BACKUP_COUNT configutration
-    logger.info(f"LOG_FILE_BACKUP_COUNT: {LOG_FILE_BACKUP_COUNT}")
+    # log the LOG_FILE_BACKUP_COUNT configuration
+    logger.debug(f"LOG_FILE_BACKUP_COUNT: {LOG_FILE_BACKUP_COUNT}")
