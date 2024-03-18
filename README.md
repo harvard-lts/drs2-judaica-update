@@ -11,7 +11,7 @@ Currently contains 1 script that:
 - copy env-example to .env and fill values
 - `docker build -t drs2-judaica-update:latest . -f Dockerfile` 
 ## Running the docker container
-- `docker run --rm --name my-judaica-update --mount type=bind,source=${PWD},target=/app -it drs2-judaica-update` 
+- `docker run --rm --name my-judaica-update --mount type=bind,source=${PWD},target=/app --env-file .env -it drs2-judaica-update` 
 
 ## Running the script to populate the DRS update table
 - For Usage
@@ -41,8 +41,8 @@ Currently contains 1 script that:
   - Place input file(s) containing file IDs in `./io/judaica`
 - Run according to usage
   - `populate.py -i /app/io/judaica -o /app/io/ocfl-input -x /app/io/ocfl-paths`
-  - This will call `judaica.py` for each file in `io/judaica`. After the output 
-  has been created in `io/ocfl-input`, it will pass each output file to `ocflpaths.py`. 
+  - `populate.py` will call `judaica.py` for each file in `io/judaica`. After the output
+  has been created in `io/ocfl-input`, it will pass each output file to `ocflpaths.py`.
   The final output of CSV files containg S3 paths will be written to `io/ocfl-paths`
   There is a configurable delay between calls, which defaults to 5 seconds.
 

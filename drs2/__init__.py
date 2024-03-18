@@ -4,7 +4,7 @@ import os
 import socket
 from datetime import datetime
 
-LOG_FILE_BACKUP_COUNT = os.getenv('LOG_FILE_BACKUP_COUNT')
+LOG_FILE_BACKUP_COUNT = int(os.getenv('LOG_FILE_BACKUP_COUNT'))
 LOG_ROTATION = "midnight"
 
 container_id = socket.gethostname()
@@ -35,3 +35,5 @@ def configure_logger():  # pragma: no cover
         logger.addHandler(file_handler)
 
     logger.setLevel(log_level)
+    # log the LOG_FILE_BACKUP_COUNT configuration
+    logger.debug(f"LOG_FILE_BACKUP_COUNT: {LOG_FILE_BACKUP_COUNT}")
